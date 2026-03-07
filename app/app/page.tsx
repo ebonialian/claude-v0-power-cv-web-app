@@ -1,273 +1,177 @@
 "use client"
 
-import { useState, useCallback } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
 import { useUser } from "@/lib/user-context"
 import { 
-  Upload, 
   FileText, 
-  Loader2, 
-  Sparkles,
-  Target,
-  X
+  Upload, 
+  History, 
+  TrendingUp, 
+  ArrowRight,
+  Crown
 } from "lucide-react"
-import type { AnalysisResult } from "@/lib/types"
 
-export default function AnalyzePage() {
-  const { user, isPro, addAnalysis } = useUser()
-  const router = useRouter()
-  
-  const [file, setFile] = useState<File | null>(null)
-  const [jobTarget, setJobTarget] = useState("")
-  const [ofertaLaboral, setOfertaLaboral] = useState("")
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [dragActive, setDragActive] = useState(false)
-  const [error, setError] = useState("")
+export default function DashboardPage() {
+  const { user, isPro, analysisHistory } = useUser()
 
-  const handleDrag = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true)
-    } else if (e.type === "dragleave") {
-      setDragActive(false)
-    }
-  }, [])
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
-    
-    const droppedFile = e.dataTransfer.files?.[0]
-    if (droppedFile && (droppedFile.type === "application/pdf" || droppedFile.name.endsWith(".docx"))) {
-      setFile(droppedFile)
-      setError("")
-    } else {
-      setError("Solo aceptamos archivos PDF o DOCX")
-    }
-  }, [])
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0]
-    if (selectedFile) {
-      if (selectedFile.type === "application/pdf" || selectedFile.name.endsWith(".docx")) {
-        setFile(selectedFile)
-        setError("")
-      } else {
-        setError("Solo aceptamos archivos PDF o DOCX")
-      }
-    }
-  }
-
-  const handleAnalyze = async () => {
-    if (!file) {
-      setError("Subí tu CV para analizarlo")
-      return
-    }
-    if (!jobTarget.trim()) {
-      setError("Indicá el puesto al que querés aplicar")
-      return
-    }
-
-    setIsAnalyzing(true)
-    setError("")
-
-    try {
-      // Create form data to send to API
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('jobTarget', jobTarget)
-      formData.append('isPro', String(isPro))
-      if (ofertaLaboral) {
-        formData.append('ofertaLaboral', ofertaLaboral)
-      }
-
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error('Error al analizar el CV')
-      }
-
-      const result: AnalysisResult = await response.json()
-      
-      // Save analysis if user is logged in and Pro
-      if (user && isPro) {
-        addAnalysis(result)
-      }
-
-      // Store result in sessionStorage for the results page
-      sessionStorage.setItem('lastAnalysis', JSON.stringify(result))
-      
-      // Navigate to results
-      router.push(`/app/resultado/${result.id}`)
-    } catch (err) {
-      console.error('Analysis error:', err)
-      setError("Error al analizar el CV. Intentá de nuevo.")
-    } finally {
-      setIsAnalyzing(false)
-    }
-  }
+  const lastAnalysis = analysisHistory[0]
+  const totalAnalyses = analysisHistory.length
+  const avgScore = totalAnalyses > 0 
+    ? Math.round(analysisHistory.reduce((sum, a) => sum + a.score_total, 0) / totalAnalyses)
+    : null
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
-      {/* Header */}
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+      {/* Welcome Header */}
       <div className="mb-8">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
-          Analizá tu CV
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
+          {user ? `Hola, ${user.fullName.split(' ')[0]}` : 'Bienvenido a PowerCV'}
         </h1>
         <p className="text-muted-foreground">
-          Subí tu CV y descubrí cómo mejorarlo para pasar los filtros ATS
+          {isPro 
+            ? 'Optimizá tu CV con todas las funciones Pro' 
+            : 'Analizá y mejorá tu CV para destacar en los procesos de selección'
+          }
         </p>
       </div>
 
-      <div className="space-y-6">
-        {/* File Upload */}
-        <Card className="p-6 bg-card border-border">
-          <Label className="text-foreground font-medium mb-4 block">
-            Tu CV (PDF o DOCX)
-          </Label>
-          
-          <div
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-            className={`
-              relative border-2 border-dashed rounded-xl p-8 text-center transition-colors
-              ${dragActive 
-                ? "border-primary bg-primary/5" 
-                : file 
-                  ? "border-primary/50 bg-primary/5"
-                  : "border-border hover:border-muted-foreground"
-              }
-            `}
-          >
-            <input
-              type="file"
-              accept=".pdf,.docx"
-              onChange={handleFileChange}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
-            
-            {file ? (
-              <div className="flex items-center justify-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-primary" />
-                </div>
-                <div className="text-left">
-                  <p className="font-medium text-foreground">{file.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {(file.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    setFile(null)
-                  }}
-                  className="p-2 hover:bg-muted rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5 text-muted-foreground" />
-                </button>
+      {/* Quick Actions */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {/* Primary CTA - Analyze */}
+        <Link href="/app/analizar" className="sm:col-span-2 lg:col-span-1">
+          <Card className="p-6 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors h-full cursor-pointer">
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-lg bg-primary-foreground/20 flex items-center justify-center">
+                <Upload className="w-6 h-6" />
               </div>
-            ) : (
-              <>
-                <Upload className="w-10 h-10 text-muted-foreground mx-auto mb-4" />
-                <p className="text-foreground font-medium mb-1">
-                  Arrastrá tu CV acá o hacé click para subir
+              <ArrowRight className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-semibold mb-1">Analizar CV</h3>
+            <p className="text-primary-foreground/80 text-sm">
+              Subí tu CV y obtené un análisis detallado con IA
+            </p>
+          </Card>
+        </Link>
+
+        {/* History */}
+        <Link href="/app/historial">
+          <Card className="p-6 bg-card border-border hover:border-primary/30 transition-colors h-full cursor-pointer">
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center">
+                <History className="w-6 h-6 text-foreground" />
+              </div>
+              {!isPro && (
+                <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium flex items-center gap-1">
+                  <Crown className="w-3 h-3" />
+                  Pro
+                </span>
+              )}
+            </div>
+            <h3 className="text-lg font-semibold text-foreground mb-1">Historial</h3>
+            <p className="text-muted-foreground text-sm">
+              {isPro 
+                ? `${totalAnalyses} análisis realizados`
+                : 'Activá Pro para ver tu historial'
+              }
+            </p>
+          </Card>
+        </Link>
+
+        {/* Resources */}
+        <Link href="/app/recursos">
+          <Card className="p-6 bg-card border-border hover:border-primary/30 transition-colors h-full cursor-pointer">
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center">
+                <FileText className="w-6 h-6 text-foreground" />
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-foreground mb-1">Recursos</h3>
+            <p className="text-muted-foreground text-sm">
+              Guías y plantillas para mejorar tu CV
+            </p>
+          </Card>
+        </Link>
+      </div>
+
+      {/* Stats / Last Analysis */}
+      {isPro && lastAnalysis && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Tu progreso</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="p-4 bg-card border-border">
+              <p className="text-sm text-muted-foreground mb-1">Último score</p>
+              <p className="text-2xl font-bold text-primary">{lastAnalysis.score_total}/100</p>
+            </Card>
+            <Card className="p-4 bg-card border-border">
+              <p className="text-sm text-muted-foreground mb-1">Promedio</p>
+              <p className="text-2xl font-bold text-foreground">{avgScore}/100</p>
+            </Card>
+            <Card className="p-4 bg-card border-border">
+              <p className="text-sm text-muted-foreground mb-1">Total análisis</p>
+              <p className="text-2xl font-bold text-foreground">{totalAnalyses}</p>
+            </Card>
+            <Card className="p-4 bg-card border-border">
+              <p className="text-sm text-muted-foreground mb-1">Último puesto</p>
+              <p className="text-lg font-medium text-foreground truncate">{lastAnalysis.job_target}</p>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* Pro Upsell for Free Users */}
+      {!isPro && (
+        <Card className="p-6 bg-secondary text-secondary-foreground">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-lg bg-secondary-foreground/20 flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-1">Pasá a Pro</h3>
+                <p className="text-secondary-foreground/80 text-sm">
+                  Desbloqueá historial, rangos salariales, cursos recomendados y más.
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  PDF o DOCX, máximo 10MB
-                </p>
-              </>
-            )}
+              </div>
+            </div>
+            <Link href="/app/cuenta">
+              <Button className="bg-primary-foreground text-secondary hover:bg-primary-foreground/90 font-semibold min-h-[44px] whitespace-nowrap">
+                Ver planes
+              </Button>
+            </Link>
           </div>
         </Card>
+      )}
 
-        {/* Job Target */}
-        <Card className="p-6 bg-card border-border">
-          <Label htmlFor="jobTarget" className="text-foreground font-medium mb-4 flex items-center gap-2">
-            <Target className="w-4 h-4 text-primary" />
-            Puesto objetivo
-          </Label>
-          <Input
-            id="jobTarget"
-            placeholder="Ej: Desarrollador Full Stack, Marketing Manager, Analista de Datos..."
-            value={jobTarget}
-            onChange={(e) => setJobTarget(e.target.value)}
-            className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-[48px] text-base"
-          />
-          <p className="text-sm text-muted-foreground mt-2">
-            Indicá el tipo de puesto al que querés aplicar para un análisis más preciso
-          </p>
-        </Card>
-
-        {/* Job Offer Comparison (Pro Feature) */}
-        <Card className={`p-6 bg-card border-border ${!isPro ? 'opacity-60' : ''}`}>
-          <Label htmlFor="ofertaLaboral" className="text-foreground font-medium mb-4 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-secondary" />
-            Comparar con oferta laboral
-            {!isPro && (
-              <span className="px-2 py-0.5 rounded-full bg-secondary/20 text-secondary text-xs font-medium">
-                Pro
-              </span>
-            )}
-          </Label>
-          <Textarea
-            id="ofertaLaboral"
-            placeholder="Pegá acá el texto de la oferta laboral para que comparemos tu CV con los requisitos específicos..."
-            value={ofertaLaboral}
-            onChange={(e) => setOfertaLaboral(e.target.value)}
-            disabled={!isPro}
-            rows={4}
-            className="bg-input border-border text-foreground placeholder:text-muted-foreground resize-none text-base"
-          />
-          <p className="text-sm text-muted-foreground mt-2">
-            {isPro 
-              ? "Analizamos qué tan bien tu CV matchea con los requisitos de la oferta"
-              : "Activá Pro para comparar tu CV con ofertas laborales específicas"
-            }
-          </p>
-        </Card>
-
-        {/* Error Message */}
-        {error && (
-          <p className="text-destructive text-sm">{error}</p>
-        )}
-
-        {/* Analyze Button */}
-        <Button
-          onClick={handleAnalyze}
-          disabled={isAnalyzing || !file}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold min-h-[56px] text-lg"
-        >
-          {isAnalyzing ? (
-            <>
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              Analizando tu CV...
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-5 h-5 mr-2" />
-              Analizar CV con IA
-            </>
-          )}
-        </Button>
-
-        {/* Info */}
-        <div className="text-center text-sm text-muted-foreground">
-          <p>El análisis tarda aproximadamente 30 segundos</p>
+      {/* Tips Section */}
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold text-foreground mb-4">Tips para un mejor score</h2>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Card className="p-4 bg-card border-border">
+            <h3 className="font-medium text-foreground mb-2">Usá palabras clave</h3>
+            <p className="text-sm text-muted-foreground">
+              Incluí términos específicos del puesto al que aplicás. Los ATS buscan keywords exactas.
+            </p>
+          </Card>
+          <Card className="p-4 bg-card border-border">
+            <h3 className="font-medium text-foreground mb-2">Formato simple</h3>
+            <p className="text-sm text-muted-foreground">
+              Evitá tablas, columnas y gráficos. Los ATS prefieren texto plano y estructura clara.
+            </p>
+          </Card>
+          <Card className="p-4 bg-card border-border">
+            <h3 className="font-medium text-foreground mb-2">Cuantificá logros</h3>
+            <p className="text-sm text-muted-foreground">
+              Usá números y métricas. "Aumenté ventas 30%" es mejor que "Aumenté ventas".
+            </p>
+          </Card>
+          <Card className="p-4 bg-card border-border">
+            <h3 className="font-medium text-foreground mb-2">Personalizá cada CV</h3>
+            <p className="text-sm text-muted-foreground">
+              Adaptá tu CV a cada oferta. Un CV genérico tiene menos chances de pasar los filtros.
+            </p>
+          </Card>
         </div>
       </div>
     </div>

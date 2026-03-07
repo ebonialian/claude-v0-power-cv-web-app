@@ -43,12 +43,59 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
   const handleUpgrade = async () => {
     setIsProcessing(true)
     
-    // TODO: Integrar con Mercado Pago Checkout Pro
-    // 1. Crear preferencia de pago en el backend
-    // 2. Redirigir al usuario a Mercado Pago
-    // 3. Webhook de MP actualiza el plan en la base de datos
+    /**
+     * MERCADO PAGO INTEGRATION - TODO
+     * 
+     * Endpoints necesarios:
+     * 
+     * 1. POST /api/mercadopago/create-preference
+     *    - Crea una preferencia de pago con los datos del plan Pro
+     *    - Retorna init_point (URL de checkout)
+     *    - Body: { user_id, plan: 'pro', amount: 9.99 }
+     *    
+     * 2. POST /api/mercadopago/webhook
+     *    - Recibe notificaciones de Mercado Pago (IPN)
+     *    - Actualiza profiles.plan = 'pro' cuando payment.status === 'approved'
+     *    - Guarda mp_subscription_id en profiles
+     *    
+     * 3. GET /api/mercadopago/subscription-status
+     *    - Verifica el estado actual de la suscripción del usuario
+     *    
+     * Flujo:
+     * 1. Usuario hace click en "Activar Pro"
+     * 2. Se crea preferencia de pago → retorna init_point
+     * 3. Redirigir a init_point (Mercado Pago Checkout)
+     * 4. Usuario completa el pago en MP
+     * 5. MP envía webhook a /api/mercadopago/webhook
+     * 6. Backend actualiza el plan del usuario en la DB
+     * 7. Usuario es redirigido de vuelta a /app con plan actualizado
+     * 
+     * Ejemplo de creación de preferencia (backend):
+     * 
+     * import mercadopago from 'mercadopago'
+     * mercadopago.configure({ access_token: process.env.MP_ACCESS_TOKEN })
+     * 
+     * const preference = await mercadopago.preferences.create({
+     *   items: [{
+     *     title: 'PowerCV Pro - Mensual',
+     *     unit_price: 9.99,
+     *     currency_id: 'USD',
+     *     quantity: 1,
+     *   }],
+     *   back_urls: {
+     *     success: `${process.env.NEXT_PUBLIC_URL}/app?upgrade=success`,
+     *     failure: `${process.env.NEXT_PUBLIC_URL}/app?upgrade=failure`,
+     *     pending: `${process.env.NEXT_PUBLIC_URL}/app?upgrade=pending`,
+     *   },
+     *   auto_return: 'approved',
+     *   notification_url: `${process.env.NEXT_PUBLIC_URL}/api/mercadopago/webhook`,
+     *   external_reference: user.id,
+     * })
+     * 
+     * return preference.body.init_point
+     */
     
-    // Simulación para demo - en producción esto sería el flujo de MP
+    // Demo simulation - replace with actual MP integration
     await new Promise(resolve => setTimeout(resolve, 1500))
     updatePlan('pro')
     setIsProcessing(false)
@@ -60,9 +107,9 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="bg-card border-border max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-display text-2xl text-foreground flex items-center gap-2">
-              <Crown className="w-6 h-6 text-secondary" />
-              Ya sos Pro
+          <DialogTitle className="text-2xl text-foreground flex items-center gap-2">
+            <Crown className="w-6 h-6 text-primary" />
+            Ya sos Pro
             </DialogTitle>
             <DialogDescription className="text-muted-foreground">
               Tenés acceso a todas las funcionalidades premium de PowerCV.
@@ -95,8 +142,8 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-card border-border max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-display text-2xl text-foreground flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-secondary" />
+          <DialogTitle className="text-2xl text-foreground flex items-center gap-2">
+            <Sparkles className="w-6 h-6 text-primary" />
             Activá PowerCV Pro
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
@@ -123,15 +170,15 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
           </div>
 
           {/* Pro Plan */}
-          <div className="p-5 rounded-xl bg-secondary/10 border-2 border-secondary relative">
+          <div className="p-5 rounded-xl bg-primary/5 border-2 border-primary relative">
             <div className="absolute -top-3 right-4">
-              <span className="px-2 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">
+              <span className="px-2 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
                 Popular
               </span>
             </div>
-            <h3 className="font-display text-lg font-semibold text-foreground mb-1 flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-foreground mb-1 flex items-center gap-2">
               Pro
-              <Crown className="w-4 h-4 text-secondary" />
+              <Crown className="w-4 h-4 text-primary" />
             </h3>
             <div className="flex items-baseline gap-1 mb-4">
               <span className="text-2xl font-bold text-foreground">$9.99</span>
@@ -140,7 +187,7 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
             <ul className="space-y-2">
               {proFeatures.map((feature, index) => (
                 <li key={index} className="flex items-start gap-2 text-sm text-foreground">
-                  <Check className="w-4 h-4 text-secondary flex-shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                   <span>{feature}</span>
                 </li>
               ))}
@@ -152,7 +199,7 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
           <Button
             onClick={handleUpgrade}
             disabled={isProcessing}
-            className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold min-h-[48px]"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold min-h-[48px]"
           >
             {isProcessing ? (
               "Procesando..."

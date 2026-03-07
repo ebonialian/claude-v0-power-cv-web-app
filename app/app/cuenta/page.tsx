@@ -26,7 +26,7 @@ export default function CuentaPage() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
             Mi cuenta
           </h1>
           <p className="text-muted-foreground">
@@ -36,7 +36,7 @@ export default function CuentaPage() {
 
         <Card className="p-8 bg-card border-border text-center">
           <User className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <h2 className="font-display text-xl font-semibold text-foreground mb-2">
+          <h2 className="text-xl font-semibold text-foreground mb-2">
             No iniciaste sesión
           </h2>
           <p className="text-muted-foreground mb-6">
@@ -57,7 +57,7 @@ export default function CuentaPage() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
           Mi cuenta
         </h1>
         <p className="text-muted-foreground">
@@ -67,16 +67,16 @@ export default function CuentaPage() {
 
       <div className="space-y-6">
         {/* Plan Card */}
-        <Card className={`p-6 ${isPro ? 'bg-secondary/10 border-secondary/30' : 'bg-card border-border'}`}>
+        <Card className={`p-6 ${isPro ? 'bg-primary/5 border-primary/30' : 'bg-card border-border'}`}>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                isPro ? 'bg-secondary/20' : 'bg-muted'
+                isPro ? 'bg-primary/10' : 'bg-muted'
               }`}>
-                <Crown className={`w-6 h-6 ${isPro ? 'text-secondary' : 'text-muted-foreground'}`} />
+                <Crown className={`w-6 h-6 ${isPro ? 'text-primary' : 'text-muted-foreground'}`} />
               </div>
               <div>
-                <h2 className="font-display text-lg font-semibold text-foreground">
+                <h2 className="text-lg font-semibold text-foreground">
                   Plan {isPro ? 'Pro' : 'Free'}
                 </h2>
                 <p className="text-muted-foreground text-sm">
@@ -91,7 +91,7 @@ export default function CuentaPage() {
             {!isPro && (
               <Button
                 onClick={() => setUpgradeModalOpen(true)}
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 <Crown className="w-4 h-4 mr-2" />
                 Activar Pro
@@ -100,31 +100,31 @@ export default function CuentaPage() {
           </div>
 
           {isPro && (
-            <div className="mt-6 pt-6 border-t border-secondary/20">
+            <div className="mt-6 pt-6 border-t border-primary/20">
               <h3 className="font-medium text-foreground mb-3">Beneficios activos:</h3>
               <ul className="grid sm:grid-cols-2 gap-2">
                 <li className="flex items-center gap-2 text-sm text-foreground">
-                  <Check className="w-4 h-4 text-secondary" />
+                  <Check className="w-4 h-4 text-primary" />
                   Historial completo
                 </li>
                 <li className="flex items-center gap-2 text-sm text-foreground">
-                  <Check className="w-4 h-4 text-secondary" />
+                  <Check className="w-4 h-4 text-primary" />
                   Perfil acumulativo IA
                 </li>
                 <li className="flex items-center gap-2 text-sm text-foreground">
-                  <Check className="w-4 h-4 text-secondary" />
+                  <Check className="w-4 h-4 text-primary" />
                   Rangos salariales
                 </li>
                 <li className="flex items-center gap-2 text-sm text-foreground">
-                  <Check className="w-4 h-4 text-secondary" />
+                  <Check className="w-4 h-4 text-primary" />
                   Cursos recomendados
                 </li>
                 <li className="flex items-center gap-2 text-sm text-foreground">
-                  <Check className="w-4 h-4 text-secondary" />
+                  <Check className="w-4 h-4 text-primary" />
                   Recursos premium
                 </li>
                 <li className="flex items-center gap-2 text-sm text-foreground">
-                  <Check className="w-4 h-4 text-secondary" />
+                  <Check className="w-4 h-4 text-primary" />
                   PDF completo
                 </li>
               </ul>
@@ -141,7 +141,7 @@ export default function CuentaPage() {
         {/* Profile Info */}
         <Card className="p-6 bg-card border-border">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
               <Settings className="w-5 h-5 text-primary" />
               Información personal
             </h2>
@@ -183,7 +183,7 @@ export default function CuentaPage() {
         {/* Stats */}
         {userProfile && userProfile.totalAnalyses > 0 && (
           <Card className="p-6 bg-card border-border">
-            <h2 className="font-display text-lg font-semibold text-foreground mb-4">
+            <h2 className="text-lg font-semibold text-foreground mb-4">
               Estadísticas
             </h2>
             <div className="grid grid-cols-2 gap-4">
@@ -202,7 +202,7 @@ export default function CuentaPage() {
         {/* Objective */}
         {isPro && (
           <Card className="p-6 bg-card border-border">
-            <h2 className="font-display text-lg font-semibold text-foreground mb-4">
+            <h2 className="text-lg font-semibold text-foreground mb-4">
               Objetivo profesional
             </h2>
             <p className="text-sm text-muted-foreground mb-4">

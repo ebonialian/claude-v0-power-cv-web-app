@@ -113,13 +113,13 @@ export default function ResultPage() {
       <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
         <Card className="p-8 bg-card border-border text-center">
           <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <h2 className="font-display text-xl font-semibold text-foreground mb-2">
+          <h2 className="text-xl font-semibold text-foreground mb-2">
             No hay resultados para mostrar
           </h2>
           <p className="text-muted-foreground mb-6">
             Analizá tu CV primero para ver los resultados
           </p>
-          <Link href="/app">
+          <Link href="/app/analizar">
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
               Analizar CV
             </Button>
@@ -139,7 +139,7 @@ export default function ResultPage() {
           </Button>
         </Link>
         <div className="flex-1">
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
             Resultado del análisis
           </h1>
           <p className="text-muted-foreground text-sm">
@@ -154,7 +154,7 @@ export default function ResultPage() {
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <ScoreRing score={result.scoreTotal} />
             <div className="flex-1 text-center sm:text-left">
-              <h2 className="font-display text-xl font-semibold text-foreground mb-2">
+              <h2 className="text-xl font-semibold text-foreground mb-2">
                 Score ATS
               </h2>
               <p className="text-muted-foreground">{result.resumen}</p>
@@ -192,7 +192,7 @@ export default function ResultPage() {
 
         {/* Problems */}
         <Card className="p-6 bg-card border-border">
-          <h3 className="font-display text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-destructive" />
             Problemas detectados
           </h3>
@@ -207,7 +207,7 @@ export default function ResultPage() {
           {!isPro && result.problemas.length >= 3 && (
             <button
               onClick={() => setUpgradeModalOpen(true)}
-              className="mt-4 text-sm text-secondary hover:underline flex items-center gap-1"
+              className="mt-4 text-sm text-primary hover:underline flex items-center gap-1"
             >
               <Crown className="w-4 h-4" />
               Ver todos los problemas con Pro
@@ -217,7 +217,7 @@ export default function ResultPage() {
 
         {/* Suggestions */}
         <Card className="p-6 bg-card border-border">
-          <h3 className="font-display text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-primary" />
             Sugerencias de mejora
           </h3>
@@ -232,7 +232,7 @@ export default function ResultPage() {
           {!isPro && result.sugerencias.length >= 3 && (
             <button
               onClick={() => setUpgradeModalOpen(true)}
-              className="mt-4 text-sm text-secondary hover:underline flex items-center gap-1"
+              className="mt-4 text-sm text-primary hover:underline flex items-center gap-1"
             >
               <Crown className="w-4 h-4" />
               Ver todas las sugerencias con Pro
@@ -242,11 +242,11 @@ export default function ResultPage() {
 
         {/* Pro Features */}
         {isPro && result.rangos_salariales && (
-          <Card className="p-6 bg-card border-secondary/50">
-            <h3 className="font-display text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-secondary" />
+          <Card className="p-6 bg-card border-primary/30">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-primary" />
               Rangos salariales estimados
-              <span className="px-2 py-0.5 rounded-full bg-secondary/20 text-secondary text-xs font-medium">
+              <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
                 Pro
               </span>
             </h3>
@@ -255,18 +255,18 @@ export default function ResultPage() {
         )}
 
         {isPro && result.cursos_recomendados && result.cursos_recomendados.length > 0 && (
-          <Card className="p-6 bg-card border-secondary/50">
-            <h3 className="font-display text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-secondary" />
+          <Card className="p-6 bg-card border-primary/30">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-primary" />
               Cursos recomendados
-              <span className="px-2 py-0.5 rounded-full bg-secondary/20 text-secondary text-xs font-medium">
+              <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
                 Pro
               </span>
             </h3>
             <ul className="space-y-2">
               {result.cursos_recomendados.map((curso, index) => (
                 <li key={index} className="flex items-center gap-2 text-foreground">
-                  <CheckCircle2 className="w-4 h-4 text-secondary flex-shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
                   {curso}
                 </li>
               ))}
@@ -275,11 +275,11 @@ export default function ResultPage() {
         )}
 
         {!isPro && (
-          <Card className="p-6 bg-secondary/10 border-secondary/30">
+          <Card className="p-6 bg-primary/5 border-primary/30">
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              <Crown className="w-12 h-12 text-secondary" />
+              <Crown className="w-12 h-12 text-primary" />
               <div className="flex-1 text-center sm:text-left">
-                <h3 className="font-display text-lg font-semibold text-foreground mb-1">
+                <h3 className="text-lg font-semibold text-foreground mb-1">
                   Desbloqueá más insights con Pro
                 </h3>
                 <p className="text-muted-foreground text-sm">
@@ -288,7 +288,7 @@ export default function ResultPage() {
               </div>
               <Button
                 onClick={() => setUpgradeModalOpen(true)}
-                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 <Crown className="w-4 h-4 mr-2" />
                 Activar Pro
@@ -307,7 +307,7 @@ export default function ResultPage() {
             <Download className="w-4 h-4 mr-2" />
             Descargar reporte
           </Button>
-          <Link href="/app" className="flex-1">
+          <Link href="/app/analizar" className="flex-1">
             <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground min-h-[48px]">
               Analizar otro CV
             </Button>

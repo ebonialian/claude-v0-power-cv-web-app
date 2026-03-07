@@ -20,7 +20,8 @@ import {
 import { UpgradeModal } from "@/components/upgrade-modal"
 
 const navItems = [
-  { href: "/app", label: "Analizar", icon: LayoutDashboard },
+  { href: "/app", label: "Inicio", icon: LayoutDashboard },
+  { href: "/app/analizar", label: "Analizar", icon: FileText },
   { href: "/app/historial", label: "Historial", icon: History },
   { href: "/app/recursos", label: "Recursos", icon: BookOpen },
   { href: "/app/cuenta", label: "Cuenta", icon: User },
@@ -41,12 +42,12 @@ function DashboardContent({ children }: { children: ReactNode }) {
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <FileText className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold text-lg text-foreground">PowerCV</span>
+            <span className="font-bold text-lg text-foreground">PowerCV</span>
           </Link>
           
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-foreground"
+            className="p-2 text-foreground min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -82,7 +83,7 @@ function DashboardContent({ children }: { children: ReactNode }) {
                   setUpgradeModalOpen(true)
                   setMobileMenuOpen(false)
                 }}
-                className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground mt-4"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground mt-4"
               >
                 <Crown className="w-4 h-4 mr-2" />
                 Activar Pro
@@ -110,7 +111,7 @@ function DashboardContent({ children }: { children: ReactNode }) {
             <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
               <FileText className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="font-display font-bold text-xl text-sidebar-foreground">PowerCV</span>
+            <span className="font-bold text-xl text-sidebar-foreground">PowerCV</span>
           </Link>
         </div>
 
@@ -140,7 +141,7 @@ function DashboardContent({ children }: { children: ReactNode }) {
           {!isPro && (
             <Button
               onClick={() => setUpgradeModalOpen(true)}
-              className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               <Crown className="w-4 h-4 mr-2" />
               Activar Pro

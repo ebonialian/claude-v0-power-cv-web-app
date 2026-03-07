@@ -39,7 +39,7 @@ export default function HistorialPage() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
             Historial de análisis
           </h1>
           <p className="text-muted-foreground">
@@ -48,10 +48,10 @@ export default function HistorialPage() {
         </div>
 
         <Card className="p-8 bg-card border-border text-center">
-          <div className="w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center mx-auto mb-6">
-            <Lock className="w-8 h-8 text-secondary" />
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-8 h-8 text-primary" />
           </div>
-          <h2 className="font-display text-xl font-semibold text-foreground mb-2">
+          <h2 className="text-xl font-semibold text-foreground mb-2">
             Función exclusiva Pro
           </h2>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
@@ -60,7 +60,7 @@ export default function HistorialPage() {
           </p>
           <Button
             onClick={() => setUpgradeModalOpen(true)}
-            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <Crown className="w-4 h-4 mr-2" />
             Activar Pro
@@ -76,7 +76,7 @@ export default function HistorialPage() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
           Historial de análisis
         </h1>
         <p className="text-muted-foreground">
@@ -86,9 +86,9 @@ export default function HistorialPage() {
 
       {/* Profile Stats */}
       {userProfile && userProfile.totalAnalyses > 0 && (
-        <Card className="p-6 bg-card border-secondary/30 mb-6">
-          <h2 className="font-display text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-secondary" />
+        <Card className="p-6 bg-card border-primary/30 mb-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-primary" />
             Tu perfil acumulativo
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -108,7 +108,7 @@ export default function HistorialPage() {
             )}
           </div>
           {userProfile.notasIA && (
-            <div className="mt-4 p-4 rounded-lg bg-secondary/10 border border-secondary/20">
+            <div className="mt-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
               <p className="text-sm text-muted-foreground mb-2">Notas de la IA sobre tu perfil:</p>
               <p className="text-foreground">{userProfile.notasIA}</p>
             </div>
@@ -120,7 +120,7 @@ export default function HistorialPage() {
       {analyses.length === 0 ? (
         <Card className="p-8 bg-card border-border text-center">
           <History className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <h2 className="font-display text-xl font-semibold text-foreground mb-2">
+          <h2 className="text-xl font-semibold text-foreground mb-2">
             No tenés análisis guardados
           </h2>
           <p className="text-muted-foreground mb-6">

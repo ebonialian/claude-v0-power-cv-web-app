@@ -136,7 +136,7 @@ function ResourceCard({
               {resource.title}
             </h3>
             {resource.isPro && (
-              <span className="px-2 py-0.5 rounded-full bg-secondary/20 text-secondary text-xs font-medium flex-shrink-0">
+              <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium flex-shrink-0">
                 Pro
               </span>
             )}
@@ -150,7 +150,7 @@ function ResourceCard({
               onClick={onUpgradeClick}
               variant="outline"
               size="sm"
-              className="border-secondary/50 text-secondary hover:bg-secondary/10"
+              className="border-primary/50 text-primary hover:bg-primary/10"
             >
               <Lock className="w-4 h-4 mr-2" />
               Desbloquear con Pro
