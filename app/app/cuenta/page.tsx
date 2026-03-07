@@ -1,0 +1,245 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useUser } from "@/lib/user-context"
+import { 
+  User, 
+  Mail, 
+  Crown, 
+  Calendar,
+  LogIn,
+  Check,
+  Settings
+} from "lucide-react"
+import { UpgradeModal } from "@/components/upgrade-modal"
+
+export default function CuentaPage() {
+  const { user, isPro, userProfile } = useUser()
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false)
+
+  if (!user) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
+            Mi cuenta
+          </h1>
+          <p className="text-muted-foreground">
+            Iniciá sesión para acceder a tu cuenta
+          </p>
+        </div>
+
+        <Card className="p-8 bg-card border-border text-center">
+          <User className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <h2 className="font-display text-xl font-semibold text-foreground mb-2">
+            No iniciaste sesión
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            Creá una cuenta o iniciá sesión para guardar tu progreso y acceder a más funciones.
+          </p>
+          <Link href="/login">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <LogIn className="w-4 h-4 mr-2" />
+              Iniciar sesión
+            </Button>
+          </Link>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground mb-2">
+          Mi cuenta
+        </h1>
+        <p className="text-muted-foreground">
+          Gestioná tu perfil y suscripción
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        {/* Plan Card */}
+        <Card className={`p-6 ${isPro ? 'bg-secondary/10 border-secondary/30' : 'bg-card border-border'}`}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                isPro ? 'bg-secondary/20' : 'bg-muted'
+              }`}>
+                <Crown className={`w-6 h-6 ${isPro ? 'text-secondary' : 'text-muted-foreground'}`} />
+              </div>
+              <div>
+                <h2 className="font-display text-lg font-semibold text-foreground">
+                  Plan {isPro ? 'Pro' : 'Free'}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {isPro 
+                    ? 'Tenés acceso a todas las funcionalidades premium' 
+                    : 'Actualizá a Pro para desbloquear más funciones'
+                  }
+                </p>
+              </div>
+            </div>
+            
+            {!isPro && (
+              <Button
+                onClick={() => setUpgradeModalOpen(true)}
+                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+              >
+                <Crown className="w-4 h-4 mr-2" />
+                Activar Pro
+              </Button>
+            )}
+          </div>
+
+          {isPro && (
+            <div className="mt-6 pt-6 border-t border-secondary/20">
+              <h3 className="font-medium text-foreground mb-3">Beneficios activos:</h3>
+              <ul className="grid sm:grid-cols-2 gap-2">
+                <li className="flex items-center gap-2 text-sm text-foreground">
+                  <Check className="w-4 h-4 text-secondary" />
+                  Historial completo
+                </li>
+                <li className="flex items-center gap-2 text-sm text-foreground">
+                  <Check className="w-4 h-4 text-secondary" />
+                  Perfil acumulativo IA
+                </li>
+                <li className="flex items-center gap-2 text-sm text-foreground">
+                  <Check className="w-4 h-4 text-secondary" />
+                  Rangos salariales
+                </li>
+                <li className="flex items-center gap-2 text-sm text-foreground">
+                  <Check className="w-4 h-4 text-secondary" />
+                  Cursos recomendados
+                </li>
+                <li className="flex items-center gap-2 text-sm text-foreground">
+                  <Check className="w-4 h-4 text-secondary" />
+                  Recursos premium
+                </li>
+                <li className="flex items-center gap-2 text-sm text-foreground">
+                  <Check className="w-4 h-4 text-secondary" />
+                  PDF completo
+                </li>
+              </ul>
+              
+              <div className="mt-4 p-4 rounded-lg bg-muted/50">
+                <p className="text-sm text-muted-foreground">
+                  Para cancelar tu suscripción o gestionar el pago, visitá tu cuenta de Mercado Pago.
+                </p>
+              </div>
+            </div>
+          )}
+        </Card>
+
+        {/* Profile Info */}
+        <Card className="p-6 bg-card border-border">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+              <Settings className="w-5 h-5 text-primary" />
+              Información personal
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-foreground">Nombre completo</Label>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
+                <User className="w-5 h-5 text-muted-foreground" />
+                <span className="text-foreground">{user.fullName}</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-foreground">Email</Label>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
+                <Mail className="w-5 h-5 text-muted-foreground" />
+                <span className="text-foreground">{user.email}</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-foreground">Miembro desde</Label>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
+                <Calendar className="w-5 h-5 text-muted-foreground" />
+                <span className="text-foreground">
+                  {new Date(user.createdAt).toLocaleDateString('es-AR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </span>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Stats */}
+        {userProfile && userProfile.totalAnalyses > 0 && (
+          <Card className="p-6 bg-card border-border">
+            <h2 className="font-display text-lg font-semibold text-foreground mb-4">
+              Estadísticas
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 rounded-lg bg-muted text-center">
+                <p className="text-2xl font-bold text-foreground">{userProfile.totalAnalyses}</p>
+                <p className="text-sm text-muted-foreground">CVs analizados</p>
+              </div>
+              <div className="p-4 rounded-lg bg-muted text-center">
+                <p className="text-2xl font-bold text-foreground">{userProfile.scorePromedio}</p>
+                <p className="text-sm text-muted-foreground">Score promedio</p>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Objective */}
+        {isPro && (
+          <Card className="p-6 bg-card border-border">
+            <h2 className="font-display text-lg font-semibold text-foreground mb-4">
+              Objetivo profesional
+            </h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Definí tu objetivo para que la IA te dé recomendaciones más personalizadas.
+            </p>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="rubroPrincipal" className="text-foreground">
+                  Rubro o industria
+                </Label>
+                <Input
+                  id="rubroPrincipal"
+                  placeholder="Ej: Tecnología, Marketing, Finanzas..."
+                  defaultValue={userProfile?.rubroPrincipal || ''}
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-[48px] text-base"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="objetivoProfesional" className="text-foreground">
+                  Objetivo profesional
+                </Label>
+                <Input
+                  id="objetivoProfesional"
+                  placeholder="Ej: Conseguir mi primer trabajo en tech, Cambiar de industria..."
+                  defaultValue={userProfile?.objetivoProfesional || ''}
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-[48px] text-base"
+                />
+              </div>
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                Guardar cambios
+              </Button>
+            </div>
+          </Card>
+        )}
+      </div>
+
+      <UpgradeModal open={upgradeModalOpen} onOpenChange={setUpgradeModalOpen} />
+    </div>
+  )
+}
