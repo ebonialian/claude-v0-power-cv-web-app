@@ -16,10 +16,11 @@ import {
 export default function DashboardPage() {
   const { user, isPro, analysisHistory } = useUser()
 
-  const lastAnalysis = analysisHistory[0]
-  const totalAnalyses = analysisHistory.length
+  const history = analysisHistory || []
+  const lastAnalysis = history.length > 0 ? history[0] : null
+  const totalAnalyses = history.length
   const avgScore = totalAnalyses > 0 
-    ? Math.round(analysisHistory.reduce((sum, a) => sum + a.score_total, 0) / totalAnalyses)
+    ? Math.round(history.reduce((sum, a) => sum + a.score_total, 0) / totalAnalyses)
     : null
 
   return (
