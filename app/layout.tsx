@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { UserProvider } from '@/lib/user-context'
 import './globals.css'
 
 const plusJakarta = Plus_Jakarta_Sans({ 
@@ -48,7 +49,9 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${plusJakarta.variable} bg-background`}>
       <body className="font-sans antialiased min-h-screen bg-background text-foreground">
-        {children}
+        <UserProvider>
+          {children}
+        </UserProvider>
         <Analytics />
       </body>
     </html>
