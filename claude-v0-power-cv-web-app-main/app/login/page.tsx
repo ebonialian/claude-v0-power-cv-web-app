@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label"
 import { FileText, ArrowLeft, Loader2 } from "lucide-react"
 import { getBrowserSupabaseClient } from "@/lib/supabase/client"
 
-// Google Icon Component
 function GoogleIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none">
@@ -24,7 +23,7 @@ function GoogleIcon({ className }: { className?: string }) {
 
 const supabase = getBrowserSupabaseClient()
 
-export default function LoginPage() {
+function LoginForm() {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -70,9 +69,7 @@ export default function LoginPage() {
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
-          options: {
-            data: { full_name: fullName },
-          },
+          options: { data: { full_name: fullName } },
         })
 
         if (signUpError || !data.user) {
@@ -80,17 +77,10 @@ export default function LoginPage() {
           return
         }
 
-        await supabase
-          .from("profiles")
-          .upsert(
-            {
-              id: data.user.id,
-              email,
-              full_name: fullName,
-              plan: "free",
-            },
-            { onConflict: "id" }
-          )
+        await supabase.from("profiles").upsert(
+          { id: data.user.id, email, full_name: fullName, plan: "free" },
+          { onConflict: "id" }
+        )
 
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
         if (signInError) {
@@ -111,19 +101,13 @@ export default function LoginPage() {
     setError("")
     setInfo("")
     setIsLoading(true)
-
     try {
       const redirectTo = `${window.location.origin}/app`
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: {
-          redirectTo,
-        },
+        options: { redirectTo },
       })
-
-      if (oauthError) {
-        setError("No pudimos iniciar sesión con Google. Probá de nuevo.")
-      }
+      if (oauthError) setError("No pudimos iniciar sesión con Google. Probá de nuevo.")
     } catch {
       setError("No pudimos iniciar sesión con Google. Probá de nuevo.")
     } finally {
@@ -134,23 +118,13 @@ export default function LoginPage() {
   const handlePasswordReset = async () => {
     setError("")
     setInfo("")
-
-    if (!email) {
-      setError("Escribí tu email para recuperar la contraseña.")
-      return
-    }
-
+    if (!email) { setError("Escribí tu email para recuperar la contraseña."); return }
     setIsLoading(true)
     try {
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
       })
-
-      if (resetError) {
-        setError("No pudimos enviar el mail de recuperación. Probá de nuevo en unos minutos.")
-        return
-      }
-
+      if (resetError) { setError("No pudimos enviar el mail de recuperación. Probá de nuevo en unos minutos."); return }
       setInfo("Te mandamos un mail para que restablezcas tu contraseña.")
     } catch {
       setError("No pudimos enviar el mail de recuperación. Probá de nuevo.")
@@ -161,21 +135,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
       <header className="p-4 sm:p-6">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors min-h-[44px]"
-        >
+        <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors min-h-[44px]">
           <ArrowLeft className="w-4 h-4" />
           <span>Volver</span>
         </Link>
       </header>
-
-      {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-4 py-8">
         <Card className="w-full max-w-md p-6 sm:p-8 bg-card border-border shadow-sm">
-          {/* Logo */}
           <div className="flex flex-col items-center mb-8">
             <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center mb-4">
               <FileText className="w-7 h-7 text-primary-foreground" />
@@ -188,119 +155,64 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Google OAuth Button */}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleGoogleLogin}
-            className="w-full border-border text-foreground hover:bg-muted min-h-[48px] mb-6 font-medium"
-          >
+          <Button type="button" variant="outline" onClick={handleGoogleLogin}
+            className="w-full border-border text-foreground hover:bg-muted min-h-[48px] mb-6 font-medium">
             <GoogleIcon className="w-5 h-5 mr-2" />
             Continuar con Google
           </Button>
 
           <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-card px-2 text-muted-foreground">o con email</span>
             </div>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-foreground">
-                  Nombre completo
-                </Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="Tu nombre"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required={!isLogin}
-                  className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-[48px] text-base"
-                />
+                <Label htmlFor="fullName" className="text-foreground">Nombre completo</Label>
+                <Input id="fullName" type="text" placeholder="Tu nombre" value={fullName}
+                  onChange={(e) => setFullName(e.target.value)} required={!isLogin}
+                  className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-[48px] text-base" />
               </div>
             )}
-
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="tu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-[48px] text-base"
-              />
+              <Label htmlFor="email" className="text-foreground">Email</Label>
+              <Input id="email" type="email" placeholder="tu@email.com" value={email}
+                onChange={(e) => setEmail(e.target.value)} required
+                className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-[48px] text-base" />
             </div>
-
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-foreground">
-                  Contraseña
-                </Label>
+                <Label htmlFor="password" className="text-foreground">Contraseña</Label>
                 {isLogin && (
-                  <button
-                    type="button"
-                    className="text-sm text-primary hover:underline"
-                    onClick={handlePasswordReset}
-                  >
+                  <button type="button" className="text-sm text-primary hover:underline" onClick={handlePasswordReset}>
                     ¿Olvidaste tu contraseña?
                   </button>
                 )}
               </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Mínimo 6 caracteres"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-[48px] text-base"
-              />
+              <Input id="password" type="password" placeholder="Mínimo 6 caracteres" value={password}
+                onChange={(e) => setPassword(e.target.value)} required minLength={6}
+                className="bg-input border-border text-foreground placeholder:text-muted-foreground min-h-[48px] text-base" />
             </div>
 
             {error && <p className="text-destructive text-sm">{error}</p>}
             {info && !error && <p className="text-sm text-foreground">{info}</p>}
 
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold min-h-[48px] shadow-sm"
-            >
+            <Button type="submit" disabled={isLoading}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold min-h-[48px] shadow-sm">
               {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {isLogin ? "Iniciando sesión..." : "Creando cuenta..."}
-                </>
-              ) : (
-                (isLogin ? "Iniciar sesión" : "Crear cuenta")
-              )}
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{isLogin ? "Iniciando sesión..." : "Creando cuenta..."}</>
+              ) : (isLogin ? "Iniciar sesión" : "Crear cuenta")}
             </Button>
           </form>
 
-          {/* Toggle */}
           <div className="mt-6 text-center">
             <p className="text-muted-foreground text-sm">
               {isLogin ? "¿No tenés cuenta?" : "¿Ya tenés cuenta?"}{" "}
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLogin(!isLogin)
-                  setError("")
-                  setInfo("")
-                }}
-                className="text-primary hover:underline font-medium"
-              >
+              <button type="button" onClick={() => { setIsLogin(!isLogin); setError(""); setInfo("") }}
+                className="text-primary hover:underline font-medium">
                 {isLogin ? "Crear cuenta" : "Iniciar sesión"}
               </button>
             </p>
@@ -308,5 +220,13 @@ export default function LoginPage() {
         </Card>
       </main>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   )
 }
