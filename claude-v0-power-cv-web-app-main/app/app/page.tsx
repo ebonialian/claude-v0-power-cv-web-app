@@ -122,7 +122,7 @@ export default function DashboardPage() {
             <h3 className="text-lg font-semibold text-foreground mb-1">Historial</h3>
             <p className="text-muted-foreground text-sm">
               {isPro 
-                ? `${totalAnalyses} análisis realizados`
+                ? `${analyses.length} análisis realizados`
                 : 'Activá Pro para ver tu historial'
               }
             </p>
