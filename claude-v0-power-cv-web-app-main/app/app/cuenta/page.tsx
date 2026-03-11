@@ -1,6 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
+```
+
+Guardá y desde Git Bash:
+```
+git add .
+git commit -m "fix: agregar Suspense en login page"
+git push origin master
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
