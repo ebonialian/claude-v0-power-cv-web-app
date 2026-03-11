@@ -107,9 +107,9 @@ function LoginForm() {
         provider: "google",
         options: { redirectTo },
       })
-      if (oauthError) setError("No pudimos iniciar sesión con Google. Probá de nuevo.")
-    } catch {
-      setError("No pudimos iniciar sesión con Google. Probá de nuevo.")
+      if (oauthError) setError("Error Google: " + oauthError.message)
+    } catch (e: any) {
+      setError("Error catch: " + e?.message)
     } finally {
       setIsLoading(false)
     }
