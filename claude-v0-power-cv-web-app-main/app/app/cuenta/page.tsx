@@ -1,8 +1,6 @@
 "use client"
 
-import { useState, Suspense } from "react"
-```
-
+import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -98,7 +96,6 @@ export default function CuentaPage() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
           Mi cuenta
@@ -109,7 +106,6 @@ export default function CuentaPage() {
       </div>
 
       <div className="space-y-6">
-        {/* Plan Card */}
         <Card className={`p-6 ${isPro ? 'bg-primary/5 border-primary/30' : 'bg-card border-border'}`}>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -210,7 +206,6 @@ export default function CuentaPage() {
           )}
         </Card>
 
-        {/* Profile Info */}
         <Card className="p-6 bg-card border-border">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
@@ -252,7 +247,6 @@ export default function CuentaPage() {
           </div>
         </Card>
 
-        {/* Stats */}
         {userProfile && userProfile.totalAnalyses > 0 && (
           <Card className="p-6 bg-card border-border">
             <h2 className="text-lg font-semibold text-foreground mb-4">
@@ -271,7 +265,6 @@ export default function CuentaPage() {
           </Card>
         )}
 
-        {/* Objective */}
         {isPro && (
           <Card className="p-6 bg-card border-border">
             <h2 className="text-lg font-semibold text-foreground mb-4">
@@ -310,7 +303,6 @@ export default function CuentaPage() {
           </Card>
         )}
 
-        {/* Logout */}
         <div className="flex justify-end">
           <Button
             variant="outline"
