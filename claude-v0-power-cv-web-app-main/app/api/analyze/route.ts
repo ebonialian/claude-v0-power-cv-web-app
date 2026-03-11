@@ -1,6 +1,5 @@
 import { z } from 'zod'
-// @ts-expect-error - pdf-parse no tiene tipos ESM
-const pdf = require('pdf-parse')
+import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { getServiceRoleSupabaseClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs'
@@ -242,8 +241,14 @@ async function extractTextFromFile(file: File, buffer: ArrayBuffer): Promise<str
 
   if (name.endsWith('.pdf')) {
     try {
-      const result = await pdf(bytes)
-      const text: string | undefined = result?.text
+      const loadingTask = getDocument({ data: new Uint8Array(buffer) })
+      const pdfDoc = await loadingTask.promise
+      let text = ''
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i)
+        const content = await page.getTextContent()
+        text += content.items.map((item: any) => ('str' in item ? item.str : '')).join(' ') + '\n'
+      }
 
       if (text && text.trim().length > 0) {
         return text
