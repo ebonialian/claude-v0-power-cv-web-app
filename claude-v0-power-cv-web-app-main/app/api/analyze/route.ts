@@ -1,6 +1,6 @@
 import { z } from 'zod'
 // @ts-expect-error - pdf-parse no tiene tipos ESM
-import pdf from 'pdf-parse'
+const pdf = require('pdf-parse')
 import { getServiceRoleSupabaseClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs'
