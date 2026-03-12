@@ -1,6 +1,6 @@
 import { z } from 'zod'
 // @ts-ignore
-const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js')
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { getServiceRoleSupabaseClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs'
