@@ -74,7 +74,11 @@ export async function POST(request: Request) {
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => "")
-      console.error("Error al crear checkout en Lemon Squeezy:", errorText)
+      console.error("Error al crear checkout en Lemon Squeezy:", response.status, errorText)
+return NextResponse.json(
+  { error: errorText },
+  { status: 502 },
+)
       return NextResponse.json(
         { error: "No pudimos crear el checkout de Lemon Squeezy. Probá de nuevo en unos minutos." },
         { status: 502 },
