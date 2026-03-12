@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs'
+// @ts-ignore
+const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js')
 import { getServiceRoleSupabaseClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs'
@@ -241,7 +242,7 @@ async function extractTextFromFile(file: File, buffer: ArrayBuffer): Promise<str
 
   if (name.endsWith('.pdf')) {
     try {
-      const loadingTask = getDocument({ data: new Uint8Array(buffer) })
+      const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) })
       const pdfDoc = await loadingTask.promise
       let text = ''
       for (let i = 1; i <= pdfDoc.numPages; i++) {
