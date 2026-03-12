@@ -328,7 +328,7 @@ async function callClaudeForAnalysis(userPrompt: string): Promise<Analysis | nul
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5',
       max_tokens: 2000,
       system: systemPrompt,
       messages: [
@@ -402,7 +402,7 @@ ${JSON.stringify(analyses, null, 2)}`
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5',
       max_tokens: 600,
       system:
         'Sos un experto en recursos humanos que crea resúmenes breves y claros sobre el perfil profesional de una persona a partir de sus análisis de CV.',
