@@ -4,6 +4,11 @@ export const runtime = "nodejs"
 
 export async function POST(request: Request) {
   try {
+    console.log("ENV CHECK:", {
+      hasApiKey: !!process.env.LEMONSQUEEZY_API_KEY,
+      hasStoreId: !!process.env.LEMONSQUEEZY_STORE_ID,
+      hasVariantId: !!process.env.LEMONSQUEEZY_VARIANT_ID,
+    })
     const body = await request.json().catch(() => null) as {
       userId?: string
       email?: string
