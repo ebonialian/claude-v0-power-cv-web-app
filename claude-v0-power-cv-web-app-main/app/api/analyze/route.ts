@@ -229,7 +229,7 @@ Este es un usuario Free:
   } catch (error) {
     console.error('Analysis error:', error)
     return Response.json(
-      { error: 'Ocurrió un error al analizar el CV. Probá de nuevo en unos minutos.' },
+      { error: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     )
   }
