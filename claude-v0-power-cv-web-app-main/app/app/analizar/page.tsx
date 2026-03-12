@@ -98,8 +98,8 @@ export default function AnalyzePage() {
       })
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-throw new Error(errorData.error || 'Error al analizar el CV')
+        const errorText = await response.text().catch(() => 'sin respuesta')
+throw new Error(errorText)
       }
 
       const result: AnalysisResult = await response.json()
