@@ -37,71 +37,29 @@ const proFeatures = [
 ]
 
 export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
-  const { updatePlan, isPro } = useUser()
+  const { user, isPro } = useUser()
   const [isProcessing, setIsProcessing] = useState(false)
 
   const handleUpgrade = async () => {
     setIsProcessing(true)
-    
-    /**
-     * MERCADO PAGO INTEGRATION - TODO
-     * 
-     * Endpoints necesarios:
-     * 
-     * 1. POST /api/mercadopago/create-preference
-     *    - Crea una preferencia de pago con los datos del plan Pro
-     *    - Retorna init_point (URL de checkout)
-     *    - Body: { user_id, plan: 'pro', amount: 9.99 }
-     *    
-     * 2. POST /api/mercadopago/webhook
-     *    - Recibe notificaciones de Mercado Pago (IPN)
-     *    - Actualiza profiles.plan = 'pro' cuando payment.status === 'approved'
-     *    - Guarda mp_subscription_id en profiles
-     *    
-     * 3. GET /api/mercadopago/subscription-status
-     *    - Verifica el estado actual de la suscripción del usuario
-     *    
-     * Flujo:
-     * 1. Usuario hace click en "Activar Pro"
-     * 2. Se crea preferencia de pago → retorna init_point
-     * 3. Redirigir a init_point (Mercado Pago Checkout)
-     * 4. Usuario completa el pago en MP
-     * 5. MP envía webhook a /api/mercadopago/webhook
-     * 6. Backend actualiza el plan del usuario en la DB
-     * 7. Usuario es redirigido de vuelta a /app con plan actualizado
-     * 
-     * Ejemplo de creación de preferencia (backend):
-     * 
-     * import mercadopago from 'mercadopago'
-     * mercadopago.configure({ access_token: process.env.MP_ACCESS_TOKEN })
-     * 
-     * const preference = await mercadopago.preferences.create({
-     *   items: [{
-     *     title: 'PowerCV Pro - Mensual',
-     *     unit_price: 9.99,
-     *     currency_id: 'USD',
-     *     quantity: 1,
-     *   }],
-     *   back_urls: {
-     *     success: `${process.env.NEXT_PUBLIC_URL}/app?upgrade=success`,
-     *     failure: `${process.env.NEXT_PUBLIC_URL}/app?upgrade=failure`,
-     *     pending: `${process.env.NEXT_PUBLIC_URL}/app?upgrade=pending`,
-     *   },
-     *   auto_return: 'approved',
-     *   notification_url: `${process.env.NEXT_PUBLIC_URL}/api/mercadopago/webhook`,
-     *   external_reference: user.id,
-     * })
-     * 
-     * return preference.body.init_point
-     */
-    
-    // Demo simulation - replace with actual MP integration
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    updatePlan('pro')
-    setIsProcessing(false)
-    onOpenChange(false)
+    try {
+      const res = await fetch("/api/lemonsqueezy/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user?.id, email: user?.email }),
+      })
+      const data = await res.json()
+      if (data?.checkoutUrl) {
+        window.location.href = data.checkoutUrl
+      } else {
+        alert("No pudimos iniciar el pago. Probá de nuevo.")
+      }
+    } catch {
+      alert("Ocurrió un error. Probá de nuevo.")
+    } finally {
+      setIsProcessing(false)
+    }
   }
-
   if (isPro) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -181,7 +139,7 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
               <Crown className="w-4 h-4 text-primary" />
             </h3>
             <div className="flex items-baseline gap-1 mb-4">
-              <span className="text-2xl font-bold text-foreground">$9.99</span>
+              <span className="text-2xl font-bold text-foreground">$4.97</span>
               <span className="text-muted-foreground text-sm">USD/mes</span>
             </div>
             <ul className="space-y-2">
@@ -206,12 +164,12 @@ export function UpgradeModal({ open, onOpenChange }: UpgradeModalProps) {
             ) : (
               <>
                 <Crown className="w-4 h-4 mr-2" />
-                Activar Pro - $9.99 USD/mes
+                Activar Pro - $4.97 USD/mes
               </>
             )}
           </Button>
           <p className="text-xs text-muted-foreground text-center">
-            Pago seguro con Mercado Pago. Cancelá cuando quieras.
+            Pago seguro con Lemon Squeezy. Cancelá cuando quieras.
           </p>
         </div>
       </DialogContent>
