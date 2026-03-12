@@ -4,11 +4,6 @@ export const runtime = "nodejs"
 
 export async function POST(request: Request) {
   try {
-    console.log("ENV CHECK:", {
-      hasApiKey: !!process.env.LEMONSQUEEZY_API_KEY,
-      hasStoreId: !!process.env.LEMONSQUEEZY_STORE_ID,
-      hasVariantId: !!process.env.LEMONSQUEEZY_VARIANT_ID,
-    })
     const body = await request.json().catch(() => null) as {
       userId?: string
       email?: string
@@ -52,7 +47,6 @@ export async function POST(request: Request) {
                 user_id: userId,
               },
             },
-            custom_price: 497, // 4.97 USD en centavos
           },
           relationships: {
             store: {
@@ -75,12 +69,8 @@ export async function POST(request: Request) {
     if (!response.ok) {
       const errorText = await response.text().catch(() => "")
       console.error("Error al crear checkout en Lemon Squeezy:", response.status, errorText)
-return NextResponse.json(
-  { error: errorText },
-  { status: 502 },
-)
       return NextResponse.json(
-        { error: "No pudimos crear el checkout de Lemon Squeezy. Probá de nuevo en unos minutos." },
+        { error: errorText },
         { status: 502 },
       )
     }
@@ -106,4 +96,3 @@ return NextResponse.json(
     )
   }
 }
-
