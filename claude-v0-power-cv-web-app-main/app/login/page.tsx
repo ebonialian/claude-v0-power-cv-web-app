@@ -102,7 +102,7 @@ function LoginForm() {
     setInfo("")
     setIsLoading(true)
     try {
-      const redirectTo = `${window.location.origin}/app`
+      const redirectTo = `https://claude-v0-power-cv-web-app.vercel.app/app`
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { redirectTo },
