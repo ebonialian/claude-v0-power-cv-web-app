@@ -304,8 +304,9 @@ async function callClaudeForAnalysis(userPrompt: string): Promise<Analysis | nul
     const parsedJson = JSON.parse(text)
     const result = analysisSchema.safeParse(parsedJson)
     if (!result.success) {
-      console.error('Respuesta de Anthropic no cumple con el schema:', result.error)
-      return null
+      console.error('Respuesta de Anthropic no cumple con el schema:', JSON.stringify(result.error))
+      // Intentar devolver el JSON parseado aunque no cumpla el schema exactamente
+      return parsedJson as Analysis
     }
     return result.data
   } catch (e) {
