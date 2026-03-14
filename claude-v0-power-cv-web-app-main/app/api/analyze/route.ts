@@ -1,6 +1,4 @@
 import { z } from 'zod'
-// @ts-ignore
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { getServiceRoleSupabaseClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs'
@@ -240,76 +238,19 @@ async function extractTextFromFile(file: File, buffer: ArrayBuffer): Promise<str
   const name = file.name.toLowerCase()
   const bytes = Buffer.from(buffer)
 
-  if (name.endsWith('.pdf')) {
-    try {
-      const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) })
-      const pdfDoc = await loadingTask.promise
-      let text = ''
-      for (let i = 1; i <= pdfDoc.numPages; i++) {
-        const page = await pdfDoc.getPage(i)
-        const content = await page.getTextContent()
-        text += content.items.map((item: any) => ('str' in item ? item.str : '')).join(' ') + '\n'
-      }
-
-      if (text && text.trim().length > 0) {
-        return text
-      }
-
-      return `[Archivo PDF: ${file.name}]
-
-No pudimos extraer el texto internamente, pero es un CV en PDF. 
-Generá un análisis lo más útil posible basándote en el puesto objetivo y en las buenas prácticas de CV para ese rol.`
-    } catch (e) {
-      console.error('Error al procesar PDF:', e)
-      return `[Archivo PDF: ${file.name}]
-
-No pudimos leer el contenido del PDF. Generá recomendaciones generales y prácticas para mejorar un CV para el puesto indicado.`
-    }
+  if (name.endsWith('.txt')) {
+    return bytes.toString('utf-8') || '[Archivo de texto vacío]'
   }
 
   if (name.endsWith('.docx')) {
     try {
       const text = bytes.toString('utf-8')
-      if (text && text.trim().length > 0) {
-        return text
-      }
-      return `[Archivo DOCX: ${file.name}] 
-
-No pudimos extraer bien el texto del archivo DOCX. Generá recomendaciones generales para mejorar un CV para el puesto indicado.`
-    } catch (e) {
-      console.error('Error al procesar DOCX:', e)
-      return `[Archivo DOCX: ${file.name}] 
-
-No pudimos leer el contenido del archivo DOCX. Generá recomendaciones generales para mejorar un CV para el puesto indicado.`
-    }
+      if (text && text.trim().length > 50) return text
+    } catch (e) {}
+    return `[Archivo DOCX: ${file.name}]\n\nNo pudimos extraer el texto. Generá recomendaciones generales para mejorar un CV para el puesto indicado.`
   }
 
-  if (name.endsWith('.txt')) {
-    try {
-      const text = bytes.toString('utf-8')
-      if (text && text.trim().length > 0) {
-        return text
-      }
-    } catch (e) {
-      console.error('Error al procesar TXT:', e)
-    }
-
-    return '[Archivo de texto vacío o ilegible]'
-  }
-
-  // Tipo de archivo desconocido: intentamos leer como texto y, si no, caemos a mensaje genérico
-  try {
-    const text = bytes.toString('utf-8')
-    if (text && text.trim().length > 0) {
-      return text
-    }
-  } catch (e) {
-    console.error('Error al leer archivo genérico como texto:', e)
-  }
-
-  return `[Archivo: ${file.name}]
-
-No pudimos leer el contenido del archivo. Generá recomendaciones generales para mejorar un CV para el puesto indicado.`
+  return `[Archivo PDF: ${file.name}]\n\nNo pudimos extraer el texto del PDF directamente. Generá un análisis útil basándote en las mejores prácticas de CV para el puesto objetivo indicado.`
 }
 
 type Analysis = z.infer<typeof analysisSchema>
